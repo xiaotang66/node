@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>跳一跳</title>
+</head>
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      text-align: center;
+    }
+
+    canvas {
+      border: 1px solid #dee1e4;
+    }
+  </style>
+<body>
+<!--测试手机像素为720 1280 2.5倍缩小-->
+	<canvas id="jump" width="288" height="512">
+	  
+	</canvas>
+	<script>
+      var canvas = document.getElementById("jump");
+      var ctx = canvas.getContext("2d");
+      var img = new Image();
+      setInterval(()=>{
+      	img.src="./screen.png?"+Math.random();//随机数是为了防止缓存
+      	img.onload = function() {//将页面加载完以后onload
+        ctx.drawImage(img, 0, 0, 288, 512);//图片位置x为0到288，y为0到512
+      }
+      },1000)
+      var points = [];//定义一个数组，判断是第一次点击还是第二次点击
+      canvas.onclick=function(e){
+      	points.push({
+      		x:e.clientX,
+      		y:e.clientY})
+      	if(points.length>=2){
+      		var length = Math.sqrt(Math.pow(points[0].x - points[1].x, 2) + Math.pow(points[0].y - points[1].y, 2));
+      	ajax(length,points[1]);
+      	//清空数组
+      	points.length=0;
+      	}
+        console.log(points.x,points.y);
+      }
+      //原生ajax将点击的长度传递过去
+     function  ajax(data,option){
+     	var xmlhttp = new XMLHttpRequest();
+     	 xmlhttp.open("GET", "//localhost:1234/jump?length=" + data + "&x=" + points.x + "&y=" + points.y, true);
+      xmlhttp.send();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+          console.log(xmlhttp.responseText);
+        }
+      }
+     }
+	</script>
+</body>
+</html>
